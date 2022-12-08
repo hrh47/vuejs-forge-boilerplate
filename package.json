@@ -22,6 +22,7 @@
     "@progress/kendo-vue-intl": "^3.7.3",
     "@progress/kendo-vue-progressbars": "^3.7.3",
     "@vue/apollo-composable": "^4.0.0-alpha.18",
+    "@vueuse/core": "^9.6.0",
     "graphql-tag": "^2.12.6",
     "lodash-es": "^4.17.21",
     "unplugin-vue-components": "^0.20.1",

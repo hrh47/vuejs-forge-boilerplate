@@ -22,9 +22,9 @@
 import { Drawer, DrawerContent } from '@progress/kendo-vue-layout';
 import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { useLocalStorage } from '@vueuse/core';
 
-// const selectedId = ref(0);
-const expanded = ref(false);
+const expanded = ref(useLocalStorage('vue-forge-drawer-expanded', true));
 const expandedIcon = computed(() => {
   return expanded.value ? 'k-i-arrow-chevron-left' : 'k-i-arrow-chevron-right';
 });
@@ -34,7 +34,7 @@ const items = computed(() => [
     icon: 'k-i-set-column-position',
     selected: true,
     data: {
-      path: '/'
+      path: '/boards'
     }
   },
   {
