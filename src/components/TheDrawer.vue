@@ -19,45 +19,45 @@
 </template>
 
 <script setup lang="ts">
-import { Drawer, DrawerContent } from '@progress/kendo-vue-layout';
-import { computed, ref } from 'vue';
-import { useRouter } from 'vue-router';
-import { useLocalStorage } from '@vueuse/core';
+import { Drawer, DrawerContent } from "@progress/kendo-vue-layout";
+import { computed, ref } from "vue";
+import { useRouter } from "vue-router";
+import { useLocalStorage } from "@vueuse/core";
 
-const expanded = ref(useLocalStorage('vue-forge-drawer-expanded', true));
+const expanded = ref(useLocalStorage("vue-forge-drawer-expanded", true));
 const expandedIcon = computed(() => {
-  return expanded.value ? 'k-i-arrow-chevron-left' : 'k-i-arrow-chevron-right';
+  return expanded.value ? "k-i-arrow-chevron-left" : "k-i-arrow-chevron-right";
 });
 const items = computed(() => [
   {
-    text: 'Boards',
-    icon: 'k-i-set-column-position',
+    text: "Boards",
+    icon: "k-i-set-column-position",
     selected: true,
     data: {
-      path: '/boards'
-    }
+      path: "/boards",
+    },
   },
   {
-    text: 'Templates',
-    icon: 'k-i-border-left',
+    text: "Templates",
+    icon: "k-i-border-left",
     data: {
-      path: '/templates'
-    }
+      path: "/templates",
+    },
   },
   {
-    text: 'Settings',
-    icon: 'k-i-gear',
+    text: "Settings",
+    icon: "k-i-gear",
     data: {
-      path: '/settings'
-    }
+      path: "/settings",
+    },
   },
   {
-    text: 'Collapse',
+    text: "Collapse",
     icon: expandedIcon.value,
     data: {
-      action: () => (expanded.value = !expanded.value)
-    }
-  }
+      action: () => (expanded.value = !expanded.value),
+    },
+  },
 ]);
 const router = useRouter();
 const onSelect = ({ itemIndex }: { itemIndex: number }) => {
@@ -65,7 +65,7 @@ const onSelect = ({ itemIndex }: { itemIndex: number }) => {
   if (item.data.path) {
     router.push(item.data.path);
   }
-  if (typeof item.data.action === 'function') {
+  if (typeof item.data.action === "function") {
     item.data.action();
   }
 };

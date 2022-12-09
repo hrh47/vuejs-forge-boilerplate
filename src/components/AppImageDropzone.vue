@@ -5,7 +5,7 @@
     :class="{
       border: isOverDropZone,
       'bg-orange-100': isOverDropZone,
-      'border-orange-400': isOverDropZone
+      'border-orange-400': isOverDropZone,
     }"
     style="width: 300px; height: 200px; background: #3332; position: relative"
   >
@@ -24,8 +24,8 @@
 </template>
 
 <script setup lang="ts">
-import { useBase64, useDropZone } from '@vueuse/core';
-import { ref } from 'vue';
+import { useBase64, useDropZone } from "@vueuse/core";
+import { ref } from "vue";
 
 const dropZoneEl = ref<HTMLElement | null>(null);
 const file = ref();
@@ -37,6 +37,7 @@ const { isOverDropZone } = useDropZone(dropZoneEl, (files) => {
   file.value = files[0];
   console.info(file.value);
 });
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const onFileChange = (e: any) => {
   file.value = e.target.files[0];
   console.info(file.value);

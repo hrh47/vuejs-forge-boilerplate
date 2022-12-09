@@ -25,15 +25,15 @@
 <script setup lang="ts">
 import {
   Card as KCard,
-  CardTitle as KCardTitle
-} from '@progress/kendo-vue-layout';
-import type { Board } from '@/types';
+  CardTitle as KCardTitle,
+} from "@progress/kendo-vue-layout";
+import type { Board } from "@/types";
 
 defineProps<{
   board: Board;
 }>();
 
-const randomColor = '#' + Math.floor(Math.random() * 16777215).toString(16);
+const randomColor = "#" + Math.floor(Math.random() * 16777215).toString(16);
 </script>
 
 <style scoped></style>
