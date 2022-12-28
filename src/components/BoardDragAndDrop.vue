@@ -1,5 +1,5 @@
 <template>
-  <button class="text-gray-500">New Column +</button>
+  <button class="text-gray-500" @click="addColumn">New Column +</button>
   <div class="flex items-start py-12">
     <draggable
       :list="columns"
@@ -9,8 +9,26 @@
     >
       <template #item="{ element: column }">
         <div
-          class="column bg-gray-100 flex flex-col justify-between rounded-lg px-3 py-3"
-        ></div>
+          class="column bg-gray-100 flex flex-col justify-between rounded-lg px-3 py-3 mr-4 w-[300px]"
+        >
+          <h2>{{ column.title }}</h2>
+          <draggable
+            :list="column.taskIds"
+            group="tasks"
+            item-key="uid"
+            :animation="200"
+            ghost-class="ghost-card"
+            class="min-h-[400px]"
+          >
+            <template #item="{ element: taskId }">
+              <task-card
+                v-if="tasks.find((t) => t.id === taskId)"
+                :task="tasks.find((t) => t.id === taskId)"
+                class="mt-3 cursor-move"
+              />
+            </template>
+          </draggable>
+        </div>
       </template>
     </draggable>
   </div>
@@ -31,7 +49,7 @@ const tasks = reactive(cloneDeep(props.tasks));
 const board = reactive(cloneDeep(props.board));
 const columns = reactive(JSON.parse(board.order));
 
-const addColumns = () => {
+const addColumn = () => {
   columns.push({ id: uuid(), title: "New column", taskIds: [] });
 };
 
@@ -45,5 +63,3 @@ watch(columns, () => {
   );
 });
 </script>
-
-<style scoped></style>
