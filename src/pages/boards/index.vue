@@ -13,60 +13,45 @@
           class="transition duration-100 ease-in border rounded-md hover:-rotate-3"
         />
       </div>
-      <button class="text-gray-500" @click="createBoard">
+      <button class="text-gray-500" @click="createBoard(newBoardPayload)">
         <span>New Board +</span>
       </button>
     </div>
   </div>
+  <p v-if="loading">Loading...</p>
 </template>
 
 <script setup lang="ts">
 import { useAlerts } from "@/stores/alerts";
 import type { Board } from "@/types";
-import { ref } from "vue";
+import { useMutation, useQuery } from "@vue/apollo-composable";
+import { computed } from "vue";
+import boardsQuery from "@/graphql/queries/boards.query.gql";
+import createBoardMutation from "@/graphql/mutations/createBoard.mutation.gql";
 
 const alerts = useAlerts();
 
-const boards = ref<Partial<Board>[]>([
-  {
-    id: "1",
-    title: "My First Board",
-    order: "[]",
-    image: {
-      downloadUrl: "https://picsum.photos/480/270?board=1",
-    },
+const { result, loading, onError } = useQuery(boardsQuery);
+const boards = computed<Partial<Board>[]>(
+  () => result?.value?.boardsList?.items || []
+);
+
+onError(() => alerts.error("Error loading boards"));
+
+const { mutate: createBoard } = useMutation(createBoardMutation, () => ({
+  update(cache, { data: { boardCreate } }) {
+    cache.updateQuery({ query: boardsQuery }, (res) => ({
+      boardsList: {
+        items: [...res.boardsList.items, boardCreate],
+      },
+    }));
   },
-  {
-    id: "2",
-    title: "My Second Board",
-    order: "[]",
-    image: {
-      downloadUrl: "https://picsum.photos/480/270?board=2",
-    },
+}));
+
+const newBoardPayload = {
+  data: {
+    title: "Test Board",
   },
-  {
-    id: "3",
-    title: "My Third Board",
-    order: "https://picsum.photos/480/270?watermelon=3",
-  },
-  {
-    id: "4",
-    title: "And another one",
-    order: "https://picsum.photos/480/270?watermelon=4",
-  },
-  {
-    id: "5",
-    title: "Cute boardie",
-    order: "https://picsum.photos/480/270?watermelon=5",
-  },
-  {
-    id: "6",
-    title: "Serious corpo board",
-    order: "https://picsum.photos/480/270?watermelon=6",
-  },
-]);
-const createBoard = () => {
-  alerts.success("board created!");
 };
 
 const getCoolGradient = (index: number) => {
