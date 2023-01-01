@@ -26,13 +26,13 @@ import BoardMenu from "@/components/BoardMenu.vue";
 import BoardDragAndDrop from "@/components/BoardDragAndDrop.vue";
 import type { Board, Task } from "@/types";
 import { computed, toRefs } from "vue";
-import { v4 as uuid } from "uuid";
 import { useAlerts } from "@/stores/alerts";
 import { useRouter } from "vue-router";
 import { useMutation, useQuery } from "@vue/apollo-composable";
 import getBoardQuery from "@/graphql/queries/board.query.gql";
 import updateBoardMutation from "@/graphql/mutations/updateBoard.mutation.gql";
 import deleteBoardMutation from "@/graphql/mutations/deleteBoard.mutation.gql";
+import addTaskToBoardMutation from "@/graphql/mutations/addTaskToBoard.mutation.gql";
 import boardsQuery from "@/graphql/queries/boards.query.gql";
 
 const alerts = useAlerts();
@@ -47,7 +47,11 @@ const {
   result: boardData,
   loading: loadingBoard,
   onError: onBoardError,
-} = useQuery(getBoardQuery, { id: boardId.value });
+} = useQuery(
+  getBoardQuery,
+  { id: boardId.value },
+  { fetchPolicy: "cache-and-network" }
+);
 onBoardError(() => alerts.error("Error loading board"));
 const board = computed(() => boardData.value?.board || null);
 const tasks = computed(() => board.value?.tasks?.items);
@@ -80,12 +84,33 @@ const deleteBoardIfConfirmed = async () => {
   }
 };
 
+const {
+  mutate: addTaskToBoard,
+  onError: onErrorCreatingTask,
+  onDone: onDoneCreatingTask,
+} = useMutation(addTaskToBoardMutation);
+
+let taskResolve = (task: Task) => {};
+let taskReject = (message: Error) => {};
+
 const addTask = async (task: Task) => {
-  return new Promise<Task>((resolve) => {
-    const taskWithId = { ...task, id: uuid() };
-    resolve(taskWithId);
+  return new Promise<Task>((resolve, reject) => {
+    taskResolve = resolve;
+    taskReject = reject;
+    addTaskToBoard({
+      boardId: boardId.value,
+      ...task,
+    });
   });
 };
+
+onErrorCreatingTask((error) => {
+  taskReject(error);
+});
+onDoneCreatingTask((res) => {
+  taskResolve(res.data.boardUpdate.tasks.items[0]);
+  alerts.success("New task created!");
+});
 </script>
 
 <style scoped>
