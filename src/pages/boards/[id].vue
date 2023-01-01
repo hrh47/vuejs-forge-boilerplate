@@ -2,7 +2,12 @@
   <div v-if="board">
     <div class="flex justify-between">
       <AppPageHeading>
-        {{ board.title }}
+        <input
+          @keydown.enter="($event.target as HTMLInputElement).blur()"
+          @blur="updateBoardTitle(($event.target as HTMLInputElement).value)"
+          type="text"
+          :value="board.title"
+        />
       </AppPageHeading>
       <BoardMenu
         :board="(board as Board)"
@@ -25,7 +30,7 @@ import AppPageHeading from "@/components/AppPageHeading.vue";
 import BoardMenu from "@/components/BoardMenu.vue";
 import BoardDragAndDrop from "@/components/BoardDragAndDrop.vue";
 import type { Board, Task } from "@/types";
-import { computed, toRefs } from "vue";
+import { computed, ref, toRefs } from "vue";
 import { useAlerts } from "@/stores/alerts";
 import { useRouter } from "vue-router";
 import { useMutation, useQuery } from "@vue/apollo-composable";
@@ -55,8 +60,23 @@ const {
 onBoardError(() => alerts.error("Error loading board"));
 const board = computed(() => boardData.value?.board || null);
 const tasks = computed(() => board.value?.tasks?.items);
+const updatingTitle = ref(false);
 
-const { mutate: updateBoard } = useMutation(updateBoardMutation);
+const { mutate: updateBoard, onDone: onBoardUpdated } =
+  useMutation(updateBoardMutation);
+
+onBoardUpdated(() => {
+  if (updatingTitle.value) {
+    alerts.success("Board successfully updated!");
+  }
+});
+
+const updateBoardTitle = async (title: string) => {
+  if (board.value.title === title) return;
+  updatingTitle.value = true;
+  await updateBoard({ id: boardId.value, title });
+  updatingTitle.value = false;
+};
 const { mutate: deleteBoard, onError: onErrorDeletingBoard } = useMutation(
   deleteBoardMutation,
   {
