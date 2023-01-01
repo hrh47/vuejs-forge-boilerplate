@@ -60,22 +60,15 @@ const {
 onBoardError(() => alerts.error("Error loading board"));
 const board = computed(() => boardData.value?.board || null);
 const tasks = computed(() => board.value?.tasks?.items);
-const updatingTitle = ref(false);
 
 const { mutate: updateBoard, onDone: onBoardUpdated } =
   useMutation(updateBoardMutation);
 
-onBoardUpdated(() => {
-  if (updatingTitle.value) {
-    alerts.success("Board successfully updated!");
-  }
-});
+onBoardUpdated(() => alerts.success("Board successfully updated!"));
 
 const updateBoardTitle = async (title: string) => {
   if (board.value.title === title) return;
-  updatingTitle.value = true;
-  await updateBoard({ id: boardId.value, title });
-  updatingTitle.value = false;
+  updateBoard({ id: boardId.value, title });
 };
 const { mutate: deleteBoard, onError: onErrorDeletingBoard } = useMutation(
   deleteBoardMutation,

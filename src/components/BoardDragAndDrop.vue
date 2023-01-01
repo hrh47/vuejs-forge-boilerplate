@@ -11,7 +11,15 @@
         <div
           class="column bg-gray-100 flex flex-col justify-between rounded-lg px-3 py-3 mr-4 w-[300px]"
         >
-          <h2>{{ column.title }}</h2>
+          <h3>
+            <input
+              type="text"
+              :value="column.title"
+              class="bg-transparent mb-2"
+              @keydown.enter="($event.target as HTMLInputElement).blur()"
+              @blur="column.title = ($event.target as HTMLInputElement).value"
+            />
+          </h3>
           <draggable
             :list="column.taskIds"
             group="tasks"
