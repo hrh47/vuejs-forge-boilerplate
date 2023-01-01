@@ -18,7 +18,7 @@
       </button>
     </div>
   </div>
-  <p v-if="loading">Loading...</p>
+  <AppLoader v-if="loading" :overlay="true" />
 </template>
 
 <script setup lang="ts">

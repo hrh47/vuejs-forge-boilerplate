@@ -7,6 +7,7 @@
       @keypress.enter="handleEnter"
       @keypress.esc="handleEsc"
       @blur="handleEsc"
+      v-model="value"
     />
     <button
       v-else

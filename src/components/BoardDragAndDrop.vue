@@ -15,7 +15,7 @@
           <draggable
             :list="column.taskIds"
             group="tasks"
-            item-key="uid"
+            item-key="id"
             :animation="200"
             ghost-class="ghost-card"
             class="min-h-[400px]"
@@ -55,7 +55,11 @@ const emit = defineEmits<{
 }>();
 const tasks = reactive(cloneDeep(props.tasks));
 const board = reactive(cloneDeep(props.board));
-const columns = reactive<Column[]>(JSON.parse(board.order as string));
+const columns = reactive<Column[]>(
+  typeof board.order === "string"
+    ? JSON.parse(board.order as string)
+    : board.order
+);
 
 const addColumn = () => {
   columns.push({ id: uuid(), title: "New column", taskIds: [] });

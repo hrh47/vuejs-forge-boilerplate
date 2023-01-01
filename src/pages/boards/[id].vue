@@ -1,18 +1,22 @@
 <template>
-  <div>
-    <AppPageHeading>
-      {{ board.title }}
-    </AppPageHeading>
-    <BoardMenu
-      :board="(board as Board)"
-      @deleteBoard="deleteBoardIfConfirmed"
-    />
+  <div v-if="board">
+    <div class="flex justify-between">
+      <AppPageHeading>
+        {{ board.title }}
+      </AppPageHeading>
+      <BoardMenu
+        :board="(board as Board)"
+        @deleteBoard="deleteBoardIfConfirmed"
+      />
+    </div>
+
     <BoardDragAndDrop
       :tasks="(tasks as Task[])"
       :board="(board as Board)"
       @update="updateBoard"
       :add-task="addTask"
     />
+    <AppLoader v-if="loadingBoard" :overlay="true" />
   </div>
 </template>
 
@@ -21,39 +25,66 @@ import AppPageHeading from "@/components/AppPageHeading.vue";
 import BoardMenu from "@/components/BoardMenu.vue";
 import BoardDragAndDrop from "@/components/BoardDragAndDrop.vue";
 import type { Board, Task } from "@/types";
-import { ref, toRefs } from "vue";
+import { computed, toRefs } from "vue";
 import { v4 as uuid } from "uuid";
+import { useAlerts } from "@/stores/alerts";
+import { useRouter } from "vue-router";
+import { useMutation, useQuery } from "@vue/apollo-composable";
+import getBoardQuery from "@/graphql/queries/board.query.gql";
+import updateBoardMutation from "@/graphql/mutations/updateBoard.mutation.gql";
+import deleteBoardMutation from "@/graphql/mutations/deleteBoard.mutation.gql";
+import boardsQuery from "@/graphql/queries/boards.query.gql";
 
-const props = defineProps({
-  id: {
-    type: String,
-    required: true,
-  },
-});
+const alerts = useAlerts();
+const router = useRouter();
+const props = defineProps<{
+  id: string;
+}>();
+
 const { id: boardId } = toRefs(props);
-const board = ref<Partial<Board>>({
-  id: boardId?.value || "1",
-  title: "Let's have an amazing time at Vue.js forge!! 🍍",
-  order: JSON.stringify([
-    { id: "1", title: "backlog 🌴", taskIds: ["1", "2"] },
-  ]),
-});
-const tasks = ref<Partial<Task>[]>([
-  { id: "1", title: "Code like mad people!" },
-  { id: "2", title: "Push clean code" },
-]);
-const updateBoard = (b: Partial<Board>) => {
-  board.value = b;
+
+const {
+  result: boardData,
+  loading: loadingBoard,
+  onError: onBoardError,
+} = useQuery(getBoardQuery, { id: boardId.value });
+onBoardError(() => alerts.error("Error loading board"));
+const board = computed(() => boardData.value?.board || null);
+const tasks = computed(() => board.value?.tasks?.items);
+
+const { mutate: updateBoard } = useMutation(updateBoardMutation);
+const { mutate: deleteBoard, onError: onErrorDeletingBoard } = useMutation(
+  deleteBoardMutation,
+  {
+    update(cache) {
+      cache.updateQuery({ query: boardsQuery }, (res) => {
+        return {
+          boardsList: {
+            items: res.boardsList.items.filter(
+              (b: Board) => b.id !== boardId.value
+            ),
+          },
+        };
+      });
+    },
+  }
+);
+onErrorDeletingBoard(() => alerts.error("Error deleting board"));
+
+const deleteBoardIfConfirmed = async () => {
+  const yes = confirm("Are you sure you want to delete this board?");
+  if (yes) {
+    await deleteBoard({ id: boardId.value });
+    router.push("/");
+    alerts.success("Board successfully deleted");
+  }
 };
+
 const addTask = async (task: Task) => {
   return new Promise<Task>((resolve) => {
     const taskWithId = { ...task, id: uuid() };
-    tasks.value.push(taskWithId);
     resolve(taskWithId);
   });
-};
-const deleteBoardIfConfirmed = () => {
-  console.info("delete board");
 };
 </script>
 
