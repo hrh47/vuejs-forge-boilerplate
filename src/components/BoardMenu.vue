@@ -38,7 +38,7 @@
               @upload="
                 attachImageToBoard({
                   id: board.id,
-                  image: $event.id,
+                  imageId: $event.id,
                 })
               "
             />

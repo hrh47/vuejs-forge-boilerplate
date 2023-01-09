@@ -10,7 +10,7 @@
   >
     <label class="absolute top-0 left-0 right-0 bottom-0 block">
       <input
-        accept="image/png, image/jepg"
+        accept="image/png,image/jpeg"
         class="hidden"
         type="file"
         @change="onFileSelect"

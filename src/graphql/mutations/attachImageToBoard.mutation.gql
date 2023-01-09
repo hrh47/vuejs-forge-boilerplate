@@ -4,7 +4,7 @@ mutation attachImageToBoard($id: ID!, $imageId: ID!) {
     data: { image: { reconnect: { id: $imageId } } }
   ) {
     id
-    imageUrl {
+    image {
       id
       downloadUrl
     }
