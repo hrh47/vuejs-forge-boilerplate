@@ -1,11 +1,10 @@
 <template>
-  <button class="text-gray-500" @click="addColumn">New Column +</button>
-  <div class="flex items-start py-12">
+  <div class="flex items-start py-6 max-w-full">
     <draggable
       :list="columns"
       group="columns"
       item-key="id"
-      class="flex flex-grow-0 flex-shrink-0 overflow-x-scroll"
+      class="flex flex-grow-0 flex-shrink-0 overflow-x-scroll max-w-full"
     >
       <template #item="{ element: column }">
         <div
@@ -41,6 +40,12 @@
       </template>
     </draggable>
   </div>
+  <button
+    class="text-gray-500 whitespace-nowrap pr-10 block"
+    @click="addColumn"
+  >
+    New Column +
+  </button>
 </template>
 
 <script setup lang="ts">

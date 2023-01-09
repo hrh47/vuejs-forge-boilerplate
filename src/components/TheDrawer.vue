@@ -9,7 +9,7 @@
       :items="items"
       @select="onSelect"
     >
-      <DrawerContent>
+      <DrawerContent class="max-w-full overflow-x-hidden">
         <div class="p-5">
           <router-view />
         </div>
@@ -21,10 +21,12 @@
 <script setup lang="ts">
 import { Drawer, DrawerContent } from "@progress/kendo-vue-layout";
 import { computed, ref } from "vue";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { useLocalStorage } from "@vueuse/core";
 
-const selectedId = ref(0);
+const router = useRouter();
+const route = useRoute();
+
 const expanded = ref(useLocalStorage("vue-forge-drawer-expanded", true));
 const expandedIcon = computed(() => {
   return expanded.value ? "k-i-arrow-chevron-left" : "k-i-arrow-chevron-right";
@@ -59,16 +61,15 @@ const items = computed(() =>
         action: () => (expanded.value = !expanded.value),
       },
     },
-  ].map((item, index) => ({
+  ].map((item) => ({
     ...item,
-    selected: index === selectedId.value,
+    selected: item.data.path ? route.path.startsWith(item.data.path) : false,
   }))
 );
-const router = useRouter();
+
 const onSelect = ({ itemIndex }: { itemIndex: number }) => {
   const item = items.value[itemIndex];
   if (item.data.path) {
-    selectedId.value = itemIndex;
     router.push(item.data.path);
   }
   if (typeof item.data.action === "function") {
