@@ -42,7 +42,9 @@ const src = computed(() => {
   return typeof image.value === "string" ? image.value : base64.value;
 });
 
-const onFileSelect = (e: Event) => {};
+const onFileSelect = (e: Event) => {
+  handleFiles((e.target as HTMLInputElement).files);
+};
 const onDrop = (files: File[] | null) => {
   handleFiles(files);
 };
