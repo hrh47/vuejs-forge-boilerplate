@@ -22,8 +22,10 @@
     "@progress/kendo-vue-grid": "^3.7.3",
     "@progress/kendo-vue-intl": "^3.7.3",
     "@progress/kendo-vue-progressbars": "^3.7.3",
+    "@twicpics/components": "^0.14.2",
     "@vue/apollo-composable": "^4.0.0-alpha.18",
     "@vueuse/core": "^9.6.0",
+    "add": "^2.0.6",
     "graphql": "^16.5.0",
     "graphql-tag": "^2.12.6",
     "lodash-es": "^4.17.21",
@@ -33,7 +35,8 @@
     "vite-plugin-pages": "^0.24.3",
     "vue": "^3.2.37",
     "vue-router": "^4.0.16",
-    "vuedraggable": "^4.1.0"
+    "vuedraggable": "^4.1.0",
+    "yarn": "^1.22.19"
   },
   "devDependencies": {
     "8base-cli": "^0.0.111",
