@@ -43,6 +43,14 @@
               "
             />
           </li>
+          <li>
+            <AppLabelsPicker
+              :labels="fakeLabelData.existingLabels"
+              :selected="fakeLabelData.selectedLabels"
+              @labelsUpdate="fakeLabelData.existingLabels = $event"
+              @selectionUpdate="fakeLabelData.selectedLabels = $event"
+            />
+          </li>
         </ul>
       </div>
     </KPopup>
@@ -51,18 +59,19 @@
 
 <script setup lang="ts">
 import { useAlerts } from "@/stores/alerts";
-import type { Board } from "@/types";
+import type { Board, Label } from "@/types";
 import { Button as KButton } from "@progress/kendo-vue-buttons";
 import { Popup as KPopup } from "@progress/kendo-vue-popup";
 import { onClickOutside } from "@vueuse/core";
-import { ref } from "vue";
+import { reactive, ref } from "vue";
 import attachImageToBoardMutation from "@/graphql/mutations/attachImageToBoard.mutation.gql";
 import { useMutation } from "@vue/apollo-composable";
-import AppImageDropzone from "./AppImageDropzone.vue";
+import AppImageDropzone from "@/components/AppImageDropzone.vue";
+import AppLabelsPicker from "@/components/AppLabelsPicker.vue";
 
 const alerts = useAlerts();
 
-const props = defineProps<{
+defineProps<{
   board: Board;
 }>();
 const show = ref(false);
@@ -92,6 +101,17 @@ errorAttachingImage((error) => {
 });
 onImageAttached((result) => {
   emit("imageUpload", result.data.boardUpdate.image);
+});
+
+const fakeLabelData = reactive({
+  existingLabels: [
+    { label: "High Priority", color: "red", id: "1" },
+    { label: "Medium Priority", color: "orange", id: "2" },
+    { label: "Meh", color: "yellow", id: "3" },
+  ] as Partial<Label>[],
+  selectedLabels: [
+    { label: "High Priority", color: "red", id: "1" },
+  ] as Partial<Label>[],
 });
 </script>
 
