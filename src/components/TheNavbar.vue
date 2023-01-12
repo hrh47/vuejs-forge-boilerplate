@@ -29,6 +29,7 @@
         :shape="'rectangle'"
         :icon="'logout'"
         :theme-color="'warning'"
+        @click="$router.push('/logout')"
       >
         Logout
       </KButton>
